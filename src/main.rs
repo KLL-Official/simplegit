@@ -11,6 +11,8 @@ mod cmd_commit;
 mod cmd_branch;
 mod cmd_checkout;
 mod cmd_merge;
+mod cmd_log;
+mod cmd_status;
 
 fn get_config_path()->PathBuf{
     let cfg_path=PathBuf::from("./config");
@@ -30,7 +32,7 @@ struct Cli{
 }
 
 #[derive(Subcommand)]
-enum Command {
+enum Command{
     Init,
     Add{
         #[arg(value_name="PATH",value_hint=ValueHint::AnyPath)]
@@ -68,6 +70,8 @@ enum Command {
         #[arg(value_name="DIR",value_hint=ValueHint::DirPath)]
         dir:PathBuf,
     },
+    Log,
+    Status,
 }
 fn main(){
     let work_dir=get_config_path();
@@ -125,6 +129,12 @@ fn main(){
         Some(Command::Merge{branch})=>{
             println!("Merge {branch}");
             cmd_merge::merge(&work_dir,&branch);
+        }
+        Some(Command::Log)=>{
+            cmd_log::run(&work_dir);
+        }
+        Some(Command::Status)=>{
+            cmd_status::run(&work_dir);
         }
         _=>{
             println!("no command");
